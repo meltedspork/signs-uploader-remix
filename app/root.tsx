@@ -14,6 +14,12 @@ import {
   useLoaderData
 } from "@remix-run/react";
 
+import CssBaseline from '@mui/material/CssBaseline';
+import GlobalStyles from '@mui/material/GlobalStyles';
+
+import NavigatorBar from '~/components/navigator_bar.component';
+import FooterComponent from '~/components/footer.component';
+
 export async function loader() {
   return json({
     ENV: {
@@ -41,7 +47,11 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
+        <CssBaseline />
+        <NavigatorBar />
         <Outlet />
+        <FooterComponent />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(constants.ENV)}`

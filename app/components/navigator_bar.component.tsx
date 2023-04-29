@@ -18,14 +18,14 @@ const NavigatorBar = () => {
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             Signs Uploader
           </Typography>
-          {/*<nav>
+          <nav>
             <Link
               variant="button"
               color="text.primary"
-              href="#"
+              href="/profile"
               sx={{ my: 1, mx: 1.5 }}
             >
-              Features
+              Profile
             </Link>
             <Link
               variant="button"
@@ -33,17 +33,9 @@ const NavigatorBar = () => {
               href="#"
               sx={{ my: 1, mx: 1.5 }}
             >
-              Enterprise
+              Logout
             </Link>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="#"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Support
-            </Link>
-  </nav>*/}
+          </nav>
           <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
             Login
           </Button>
