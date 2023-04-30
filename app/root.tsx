@@ -3,6 +3,9 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
+import { useNavigate } from '@remix-run/react';
+import { useAuth0 } from '@auth0/auth0-react';
+
 import { json } from '@remix-run/node';
 import {
   Links,
@@ -17,8 +20,9 @@ import {
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import NavigatorBar from '~/components/navigator_bar.component';
+import NavigatorBarComponent from '~/components/navigator_bar.component';
 import FooterComponent from '~/components/footer.component';
+import AuthorizationComponent from '~/components/authorization.component';
 
 export async function loader() {
   return json({
@@ -49,8 +53,10 @@ export default function App() {
       <body>
         <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
         <CssBaseline />
-        <NavigatorBar />
-        <Outlet />
+        <NavigatorBarComponent />
+        <AuthorizationComponent>
+          <Outlet />
+        </AuthorizationComponent>
         <FooterComponent />
         <script
           dangerouslySetInnerHTML={{

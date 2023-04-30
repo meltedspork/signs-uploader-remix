@@ -1,6 +1,6 @@
 import { Auth0Provider } from '@auth0/auth0-react';
 
-const AuthenticationProvider = (props: any) => {
+const AuthenticationComponent = (props: any) => {
   const { children } = props;
   const audience: string = window.ENV.AUTH0.AUDIENCE;
   const clientId: string = window.ENV.AUTH0.CLIENT_ID;
@@ -21,4 +21,4 @@ const AuthenticationProvider = (props: any) => {
   );
 }
 
-export default AuthenticationProvider;
+export default AuthenticationComponent;
