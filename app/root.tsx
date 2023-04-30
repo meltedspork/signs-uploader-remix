@@ -3,10 +3,9 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import { useNavigate } from '@remix-run/react';
-import { useAuth0 } from '@auth0/auth0-react';
-
-import { json } from '@remix-run/node';
+import { cssBundleHref } from "@remix-run/css-bundle";
+import type { LinksFunction, LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -17,6 +16,9 @@ import {
   useLoaderData
 } from "@remix-run/react";
 
+import { getUser } from "~/session.server";
+import tailwindStylesheetUrl from "~/styles/tailwind.css";
+
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
@@ -24,8 +26,14 @@ import NavigatorBarComponent from '~/components/navigator_bar.component';
 import FooterComponent from '~/components/footer.component';
 import AuthorizationComponent from '~/components/authorization.component';
 
-export async function loader() {
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: tailwindStylesheetUrl },
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+];
+
+export const loader = async ({ request }: LoaderArgs) => {
   return json({
+    user: await getUser(request),
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
       BASE_URL: process.env.REACT_APP_API_BASE_URL,
@@ -37,21 +45,22 @@ export async function loader() {
       }
     },
   });
-}
+};
 
 export default function App() {
   const constants = useLoaderData<typeof loader>();
 
+  console.log('constants:', constants);
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
+      <body className="h-full">
+      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
         <CssBaseline />
         <NavigatorBarComponent />
         <AuthorizationComponent>
@@ -70,3 +79,19 @@ export default function App() {
     </html>
   );
 }
+
+
+/*
+        <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
+        <CssBaseline />
+        <NavigatorBarComponent />
+        <AuthorizationComponent>
+          <Outlet />
+        </AuthorizationComponent>
+        <FooterComponent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(constants.ENV)}`
+          }}
+        />
+        */
