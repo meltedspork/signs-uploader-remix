@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
 
 export default function Profile() {
@@ -46,25 +47,27 @@ export default function Profile() {
   // }, [getAccessTokenSilently, config]);
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        component="img"
-        alt={user?.name}
-        image={user?.picture}
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-        <pre>{JSON.stringify(user, null, 2)}</pre>
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <h3>Current Status</h3>
-          {currentStatus ? (
-            <pre>{JSON.stringify(currentStatus, null, 2)}</pre>
-          ) : (
-            'No Status'
-          )}
-        </Typography>
-      </CardContent>
-    </Card>
+    <main>
+      <Card sx={{ maxWidth: 345, overflow: 'inherit' }}>
+        <CardMedia
+          component="img"
+          alt={user?.name}
+          image={user?.picture}
+        />
+        <CardContent>
+          <Typography gutterBottom variant="body1" component="div">
+          <pre>{JSON.stringify(user, null, 2)}</pre>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            <h3>Current Status</h3>
+            {currentStatus ? (
+              <pre>{JSON.stringify(currentStatus, null, 2)}</pre>
+            ) : (
+              'No Status'
+            )}
+          </Typography>
+        </CardContent>
+      </Card>
+    </main>
   );
 }
