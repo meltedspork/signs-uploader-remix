@@ -1,11 +1,28 @@
+import type { ActionArgs, HeadersFunction, LoaderArgs } from '@remix-run/node';
+import { getJwt, USER_JWT_KEY } from '~/jwt.server';
+
 import { useContext, useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Grid from '@material-ui/core/Grid';
+// import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
+
+export const loader = async ({ params, request }: LoaderArgs) => {
+  console.log('requestrequest:', request);
+  const jwt = await getJwt(request);
+  console.log('jwwwwt!!:', jwt);
+  return jwt;
+};
+
+export const headers: HeadersFunction = ({
+  loaderHeaders,
+}) => ({
+  'X-DEBUG-TEST': 'foobar',
+  Authorization: '`Bearer ${accessToken}`'
+});
 
 export default function Profile() {
 //  const config = useContext(ApiContext);
@@ -23,7 +40,7 @@ export default function Profile() {
   //     try {
   //       const accessToken = await getAccessTokenSilently({
   //         audience,
-  //         scope: "read:signs",
+  //         scope: 'read:signs',
   //       });
   
   //       const userDetailsByIdUrl = `${apiBaseUrl}/status`;
@@ -50,18 +67,20 @@ export default function Profile() {
     <main>
       <Card sx={{ maxWidth: 345, overflow: 'inherit' }}>
         <CardMedia
-          component="img"
+          component='img'
           alt={user?.name}
           image={user?.picture}
         />
         <CardContent>
-          <Typography gutterBottom variant="body1" component="div">
-          <pre>{JSON.stringify(user, null, 2)}</pre>
+          <Typography gutterBottom component='pre'>
+            {JSON.stringify(user, null, 2)}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <h3>Current Status</h3>
+          <h3>
+            Current Status
+          </h3>
+          <Typography component='pre' color='text.secondary'>
             {currentStatus ? (
-              <pre>{JSON.stringify(currentStatus, null, 2)}</pre>
+              JSON.stringify(currentStatus, null, 2)
             ) : (
               'No Status'
             )}
