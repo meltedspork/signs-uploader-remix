@@ -2,7 +2,7 @@ import type { ActionArgs, HeadersFunction, LoaderArgs } from '@remix-run/node';
 import { getJwt, USER_JWT_KEY } from '~/jwt.server';
 
 import { useContext, useEffect, useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+// import { useAuth0 } from '@auth0/auth0-react';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -17,16 +17,9 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return jwt;
 };
 
-export const headers: HeadersFunction = ({
-  loaderHeaders,
-}) => ({
-  'X-DEBUG-TEST': 'foobar',
-  Authorization: '`Bearer ${accessToken}`'
-});
-
 export default function Profile() {
 //  const config = useContext(ApiContext);
-    const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+    // const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
     const [currentStatus, setCurrentStatus] = useState({});
   // useEffect(() => {
   //   const getCurrentStatus = async () => {
@@ -62,6 +55,10 @@ export default function Profile() {
   
   //   getCurrentStatus();
   // }, [getAccessTokenSilently, config]);
+  const user = {
+    picture: 'picture',
+    name: 'name',
+  }
 
   return (
     <main>

@@ -34,10 +34,12 @@
     "/postgres-data"
   ],
   "dependencies": {
-    "@auth0/auth0-react": "^2.0.2",
+    "@apollo/client": "^3.7.14",
+    "@auth0/auth0-spa-js": "^2.0.4",
     "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.8",
     "@fontsource/roboto": "^4.5.8",
+    "@graphql-tools/utils": "^9.2.1",
     "@isaacs/express-prometheus-middleware": "^1.2.1",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.2",
@@ -51,6 +53,9 @@
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
     "express": "^4.18.2",
+    "graphql": "^16.6.0",
+    "graphql-tag": "^2.12.6",
+    "graphql-tools": "^8.3.20",
     "isbot": "^3.6.8",
     "jwks-rsa": "^3.0.1",
     "morgan": "^1.10.0",

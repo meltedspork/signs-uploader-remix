@@ -8,15 +8,11 @@ import { RemixBrowser } from '@remix-run/react';
 import { startTransition, StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
-import AuthenticationComponent from '~/components/authentication.component';
-
 startTransition(() => {
   hydrateRoot(
     document,
     <StrictMode>
-      <AuthenticationComponent>
-        <RemixBrowser />
-      </AuthenticationComponent>
+      <RemixBrowser />
     </StrictMode>
   );
 });

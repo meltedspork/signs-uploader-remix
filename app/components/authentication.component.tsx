@@ -1,23 +1,108 @@
-import { Auth0Provider } from '@auth0/auth0-react';
+import {
+  Children,
+  cloneElement,
+  createContext,
+  Fragment,
+  useEffect,
+  useState
+} from 'react';
+import { createAuth0Client, useAuth0 } from '@auth0/auth0-spa-js';
 
-const AuthenticationComponent = (props: any) => {
-  const { children } = props;
-  const audience: string = window.ENV.AUTH0.AUDIENCE;
-  const clientId: string = window.ENV.AUTH0.CLIENT_ID;
-  const domain: string = window.ENV.AUTH0.DOMAIN;
-  const redirectUri: string = window.ENV.AUTH0.REDIRECT_URI;
+interface IContextProps {
+  onClickHandlers: any | null;
+}
+
+const AuthenticationContext = createContext({
+  onClickHandlers: null
+} as IContextProps);
+
+const AuthenticationProvider = (props: any) => {
+  const [onClickHandlers, setOnClickHandlers] = useState<any | null>(null);
+  const {
+    children,
+    config: {
+      audience,
+      clientId,
+      domain,
+      redirect_uri,
+      returnTo
+    }
+  } = props;
+
+  useEffect(() => {
+    createAuth0Client({
+      domain,
+      clientId
+    }).then(auth0 => {
+      const loginWithRedirect = async (_e: Event) => {
+        await auth0.loginWithRedirect({
+          authorizationParams: {
+            audience: audience!,
+            redirect_uri: redirect_uri!
+          }
+        });
+      }
+
+      const logout = async (_e: Event) => {
+        await auth0.logout({
+          logoutParams: {
+            returnTo: returnTo!
+          }
+        });
+      }
+
+      setOnClickHandlers({
+        loginWithRedirect,
+        logout
+      });
+    });
+  }, [setOnClickHandlers]);
+
+  const auth0ContextValues = {
+    onClickHandlers
+  };
 
   return (
-    <Auth0Provider
-      domain={domain}
-      clientId={clientId}
-      authorizationParams={{
-        redirect_uri: redirectUri,
-        audience
-      }}
-    >
+    <AuthenticationContext.Provider value={auth0ContextValues}>
       {children}
-    </Auth0Provider>
+    </AuthenticationContext.Provider>
+  );
+}
+
+const AuthenticationComponent = (props: any) => {
+  const {
+    children,
+    config: {
+      audience,
+      clientId,
+      domain,
+      redirect_uri,
+      returnTo
+    }
+  } = props;
+
+  const renderChildren = ({ onClickHandlers }: any) => {
+    return Children.map(children, (child) => {
+      return cloneElement(child, onClickHandlers);
+    });
+  };
+
+  return (
+    <AuthenticationProvider config={{
+      audience,
+      clientId,
+      domain,
+      redirect_uri,
+      returnTo
+    }}>
+      <AuthenticationContext.Consumer>
+        {value =>
+          <Fragment>
+            {renderChildren(value)}
+          </Fragment>
+        }
+      </AuthenticationContext.Consumer>
+    </AuthenticationProvider>
   );
 }
 

@@ -22,9 +22,10 @@ import tailwindStylesheetUrl from "~/styles/tailwind.css";
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import NavigatorBarComponent from '~/components/navigator_bar.component';
-import FooterComponent from '~/components/footer.component';
+import AuthenticationComponent from '~/components/authentication.component';
 import AuthorizationComponent from '~/components/authorization.component';
+import NavigatorBarComponent from '~/components/navigator-bar.component';
+import FooterComponent from '~/components/footer.component';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStylesheetUrl },
@@ -50,6 +51,11 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function App() {
   const constants = useLoaderData<typeof loader>();
 
+  const {
+    BASE_URL,
+    AUTH0
+  } = constants.ENV;
+
   console.log('constants:', constants);
   return (
     <html lang="en" className="h-full">
@@ -62,10 +68,18 @@ export default function App() {
       <body className="h-full">
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
         <CssBaseline />
-        <NavigatorBarComponent />
-        <AuthorizationComponent>
-          <Outlet />
-        </AuthorizationComponent>
+        <AuthenticationComponent config={{
+          audience: AUTH0.AUDIENCE,
+          clientId: AUTH0.CLIENT_ID,
+          domain: AUTH0.DOMAIN,
+          redirect_uri: AUTH0.REDIRECT_URI,
+          returnTo: BASE_URL
+        }}>
+          <NavigatorBarComponent />
+          <AuthorizationComponent>
+            <Outlet />
+          </AuthorizationComponent>
+        </AuthenticationComponent>
         <FooterComponent />
         <script
           dangerouslySetInnerHTML={{
@@ -79,19 +93,3 @@ export default function App() {
     </html>
   );
 }
-
-
-/*
-        <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
-        <CssBaseline />
-        <NavigatorBarComponent />
-        <AuthorizationComponent>
-          <Outlet />
-        </AuthorizationComponent>
-        <FooterComponent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(constants.ENV)}`
-          }}
-        />
-        */
