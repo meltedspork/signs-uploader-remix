@@ -16,8 +16,7 @@ const AuthenticationContext = createContext({
   onClickHandlers: null
 } as IContextProps);
 
-const AuthenticationProvider = (props: any) => {
-  const [onClickHandlers, setOnClickHandlers] = useState<any | null>(null);
+const AuthenticationComponent = (props: any) => {
   const {
     children,
     config: {
@@ -28,6 +27,7 @@ const AuthenticationProvider = (props: any) => {
       returnTo
     }
   } = props;
+  const [onClickHandlers, setOnClickHandlers] = useState<any | null>(null);
 
   useEffect(() => {
     createAuth0Client({
@@ -58,29 +58,6 @@ const AuthenticationProvider = (props: any) => {
     });
   }, [setOnClickHandlers]);
 
-  const auth0ContextValues = {
-    onClickHandlers
-  };
-
-  return (
-    <AuthenticationContext.Provider value={auth0ContextValues}>
-      {children}
-    </AuthenticationContext.Provider>
-  );
-}
-
-const AuthenticationComponent = (props: any) => {
-  const {
-    children,
-    config: {
-      audience,
-      clientId,
-      domain,
-      redirect_uri,
-      returnTo
-    }
-  } = props;
-
   const renderChildren = ({ onClickHandlers }: any) => {
     return Children.map(children, (child) => {
       return cloneElement(child, onClickHandlers);
@@ -88,13 +65,7 @@ const AuthenticationComponent = (props: any) => {
   };
 
   return (
-    <AuthenticationProvider config={{
-      audience,
-      clientId,
-      domain,
-      redirect_uri,
-      returnTo
-    }}>
+    <AuthenticationContext.Provider value={{ onClickHandlers }}>
       <AuthenticationContext.Consumer>
         {value =>
           <Fragment>
@@ -102,7 +73,7 @@ const AuthenticationComponent = (props: any) => {
           </Fragment>
         }
       </AuthenticationContext.Consumer>
-    </AuthenticationProvider>
+    </AuthenticationContext.Provider>
   );
 }
 
