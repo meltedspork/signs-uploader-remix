@@ -9,7 +9,7 @@ import {
 import invariant from "tiny-invariant";
 
 import { deleteNote, getNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import { requireUserId } from "~/servers/session.server";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const userId = await requireUserId(request);

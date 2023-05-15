@@ -35,21 +35,19 @@ const AuthenticationComponent = (props: any) => {
       clientId
     }).then(auth0 => {
       const loginWithRedirect = async (_e: Event) => {
-        await auth0.loginWithRedirect({
-          authorizationParams: {
-            audience: audience!,
-            redirect_uri: redirect_uri!
-          }
-        });
+        window.location.replace(
+          `https://${domain}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirect_uri}&scope=openid%20profile%20offline_access&state=`
+        );
       }
 
       const logout = async (_e: Event) => {
         await auth0.logout({
           logoutParams: {
-            returnTo: returnTo!
+            returnTo
           }
         });
       }
+      // https://{yourDomain}/v2/logout?returnTo=http%3A%2F%2Fwww.example.com&client_id={clientId}
 
       setOnClickHandlers({
         loginWithRedirect,

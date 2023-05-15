@@ -16,16 +16,16 @@ import {
   useLoaderData
 } from "@remix-run/react";
 
-import { getUser } from "~/session.server";
+import { getUser } from "~/servers/session.server";
 import tailwindStylesheetUrl from "~/styles/tailwind.css";
 
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import AuthenticationComponent from '~/components/authentication.component';
-import AuthorizationComponent from '~/components/authorization.component';
-import NavigatorBarComponent from '~/components/navigator-bar.component';
-import FooterComponent from '~/components/footer.component';
+import AuthenticationComponent from '~/components/authentication.client';
+import AuthorizationComponent from '~/components/authorization.client';
+import NavigatorBarComponent from '~/components/navigator-bar.client';
+import FooterComponent from '~/components/footer.client';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStylesheetUrl },
@@ -39,10 +39,10 @@ export const loader = async ({ request }: LoaderArgs) => {
       NODE_ENV: process.env.NODE_ENV,
       BASE_URL: process.env.REACT_APP_API_BASE_URL,
       AUTH0: {
-        AUDIENCE: process.env.AUTH0_CLIENT_AUDIENCE,
-        CLIENT_ID: process.env.AUTH0_CLIENT_CLIENT_ID,
-        DOMAIN: process.env.AUTH0_CLIENT_DOMAIN,
-        REDIRECT_URI: process.env.AUTH0_CLIENT_REDIRECT_URI
+        AUDIENCE: process.env.AUTH0_AUDIENCE,
+        CLIENT_ID: process.env.AUTH0_CLIENT_ID,
+        DOMAIN: process.env.AUTH0_DOMAIN,
+        REDIRECT_URI: process.env.AUTH0_REDIRECT_URI
       }
     },
   });

@@ -1,5 +1,5 @@
 import type { ActionArgs, HeadersFunction, LoaderArgs } from '@remix-run/node';
-import { getJwt, USER_JWT_KEY } from '~/jwt.server';
+import { verifyIdToken, USER_JWT_KEY } from '~/servers/jwt.server';
 
 import { useContext, useEffect, useState } from 'react';
 // import { useAuth0 } from '@auth0/auth0-react';
@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   console.log('requestrequest:', request);
-  const jwt = await getJwt(request);
+  const jwt = await verifyIdToken(request);
   console.log('jwwwwt!!:', jwt);
   return jwt;
 };

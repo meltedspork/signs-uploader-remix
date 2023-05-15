@@ -5,4 +5,4 @@ import { logout } from "~/servers/session.server";
 
 export const action = async ({ request }: ActionArgs) => logout(request);
 
-export const loader = async ({ request }: ActionArgs) => logout(request);
+export const loader = async () => redirect("/");

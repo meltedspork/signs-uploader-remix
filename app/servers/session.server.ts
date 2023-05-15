@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant';
 import type { User } from '~/models/user.server';
 import { getUserById } from '~/models/user.server';
 
-//import { getJwt, USER_JWT_KEY } from '~/jwt.server';
+import { verifyIdToken, verifyTokens } from '~/servers/jwt.server';
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set');
 
@@ -19,7 +19,7 @@ export const sessionStorage = createCookieSessionStorage({
   },
 });
 
-const USER_SESSION_KEY = 'userId';
+const TOKEN_SESSION_KEY = 'jwtCookie';
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get('Cookie');
@@ -30,12 +30,23 @@ export async function getUserId(
   request: Request
 ): Promise<User['id'] | undefined> {
   const session = await getSession(request);
-  const userId = session.get(USER_SESSION_KEY);
+  // const jwtVerifed: {
+  //   access_token: string;
+  //   refresh_token: string;
+  //   id_token: string;
+  //   scope: string;
+  //   expires_in: number;
+  //   token_type: string;
+  // } = await verifyTokens(userJwt);
 
-  // const getUserJwt = await getJwt(request);
-  // session.set(USER_JWT_KEY, getUserJwt);
+  // const accessToken = session.get(ACCESS_TOKEN_SESSION_KEY);
+  // const refreshTOken = session.get(REFRESH_TOKEN_SESSION_KEY);
+  const jwtCookie = session.get(TOKEN_SESSION_KEY);
 
-  return userId;
+  //const getUserJwt = await getJwt(request);
+  //session.set(USER_JWT_KEY, getUserJwt);
+
+  return jwtCookie;
 }
 
 export async function getUser(request: Request) {
@@ -71,29 +82,50 @@ export async function requireUser(request: Request) {
 
 export async function createUserSession({
   request,
-  userId,
-  remember,
   redirectTo,
+  userJwt,
+  userId,
 }: {
   request: Request;
-  userId: string;
-  remember: boolean;
   redirectTo: string;
+  userJwt: {
+    access_token: string;
+    refresh_token: string;
+    id_token: string;
+    scope: string;
+    expires_in: number;
+    token_type: string;
+  };
+  userId: string;
 }) {
-  const session = await getSession(request);
-  session.set(USER_SESSION_KEY, userId);
+  const session: any = await getSession(request);
 
-  // const userJwt = await getJwt(request);
-  // session.set(USER_JWT_KEY, userJwt);
+  // const accessTokenEncoded = Buffer.from(userJwt.access_token, 'utf8').toString('base64') ; 
+  // const refreshTokenEncoded = Buffer.from(userJwt.refresh_token, 'utf8').toString('base64');  
+  // session.set(ACCESS_TOKEN_SESSION_KEY, accessTokenEncoded);
+  // session.set(REFRESH_TOKEN_SESSION_KEY, refreshTokenEncoded);
+
+  const { sub }: any = await verifyIdToken(userJwt);
+  console.log('jwtVerifed:: sub', userJwt);
+
+
+
+  // const jwtCookie = await sessionStorage.commitSession(sub, Object.assign({
+  //   maxAge: 60 * 60 * 24 * 7 * 1000,
+  // }, {user_id: userJwt}));
+
+  // firebaseSessionMiddleware(sub, userJwt);
+  // console.log('<<<<< firebaseSessionMiddleware:', firebaseSessionMiddleware);
+  console.log('>>>> sub', jwtCookie);
+
+  session.set(TOKEN_SESSION_KEY, sub);
 
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await sessionStorage.commitSession(session, {
-        maxAge: remember
-          ? 60 * 60 * 24 * 7 // 7 days
-          : undefined,
-      }),
-    },
+        maxAge: 60 * 60 * 24 * 7
+      })
+    }
   });
 }
 
@@ -101,7 +133,7 @@ export async function logout(request: Request) {
   const session = await getSession(request);
   return redirect('/', {
     headers: {
-      'Set-Cookie': await sessionStorage.destroySession(session),
-    },
+      'Set-Cookie': await sessionStorage.destroySession(session)
+    }
   });
 }

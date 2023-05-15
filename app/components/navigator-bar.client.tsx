@@ -11,14 +11,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 const NavigatorBar = (props: any) => {
-  // const {
-  //   isLoading,
-  //   isAuthenticated,
-  //   error,
-  //   user,
-  //   loginWithRedirect,
-  //   logout
-  // } = useAuth0();
+
   const navigate = useNavigate();
 
   // if (isLoading) {
@@ -29,8 +22,8 @@ const NavigatorBar = (props: any) => {
   //   return <div>Oops... {error.message}</div>;
   // }
 
-  const loginWithRedirect = (msg = 'naka') => console.log(msg);
-  const logout = (msg = 'noko') => console.log(msg)
+  // const loginWithRedirect = (msg = 'naka') => console.log(msg);
+  // const logout = (msg = 'noko') => console.log(msg)
   const isAuthenticated = false;
   const user = {
     nickname: 'nickname',
@@ -71,26 +64,31 @@ const NavigatorBar = (props: any) => {
           Heyoo {user?.nickname}!
         </Typography>
       </IconButton>
-                {/* <Button
-                  onClick={() => logout({
-                    async openUrl(url) {
-                      window.location.replace(url);
-                    }
-                  })}
+                <Button
+                  onClick={() => navigate('/logout')}
                   variant='outlined'
                   sx={{ my: 1, mx: 1.5 }}
                 >
                   Logout
-                </Button> */}
+                </Button>
               </nav>
               :
-              <Button
-                onClick={() => loginWithRedirect()}
+              <React.Fragment>
+                  <Button
+                  onClick={() => navigate('/logout')}
+                  variant='outlined'
+                  sx={{ my: 1, mx: 1.5 }}
+                >
+                  Logout
+                </Button>
+                <Button
+                onClick={() => navigate('/login')}
                 variant='outlined'
                 sx={{ my: 1, mx: 1.5 }}
               >
                 Login
               </Button>
+              </React.Fragment>
             }
           </Toolbar>
         </AppBar>

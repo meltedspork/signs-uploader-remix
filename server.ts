@@ -6,6 +6,8 @@ import compression from "compression";
 import express from "express";
 import morgan from "morgan";
 
+import firebaseSessionMiddleware from './app/middlewares/firebase-session.server';
+
 const app = express();
 const metricsApp = express();
 app.use(
@@ -15,6 +17,7 @@ app.use(
     metricsApp,
   })
 );
+app.use(firebaseSessionMiddleware);
 
 app.use((req, res, next) => {
   // helpful headers:
