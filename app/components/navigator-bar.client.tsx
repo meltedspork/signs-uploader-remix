@@ -10,7 +10,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-const NavigatorBar = (props: any) => {
+const NavigatorBarComponent = (props: any) => {
 
   const navigate = useNavigate();
 
@@ -95,4 +95,4 @@ const NavigatorBar = (props: any) => {
   );
 }
 
-export default NavigatorBar;
+export default NavigatorBarComponent;

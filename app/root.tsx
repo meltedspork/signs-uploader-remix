@@ -37,13 +37,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     user: await getUser(request),
     ENV: {
       NODE_ENV: process.env.NODE_ENV,
-      BASE_URL: process.env.REACT_APP_API_BASE_URL,
-      AUTH0: {
-        AUDIENCE: process.env.AUTH0_AUDIENCE,
-        CLIENT_ID: process.env.AUTH0_CLIENT_ID,
-        DOMAIN: process.env.AUTH0_DOMAIN,
-        REDIRECT_URI: process.env.AUTH0_REDIRECT_URI
-      }
+      BASE_URL: process.env.REACT_APP_API_BASE_URL
     },
   });
 };
@@ -51,10 +45,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function App() {
   const constants = useLoaderData<typeof loader>();
 
-  const {
-    BASE_URL,
-    AUTH0
-  } = constants.ENV;
+  const { BASE_URL } = constants.ENV;
 
   console.log('constants:', constants);
   return (
@@ -68,18 +59,8 @@ export default function App() {
       <body className="h-full">
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
         <CssBaseline />
-        <AuthenticationComponent config={{
-          audience: AUTH0.AUDIENCE,
-          clientId: AUTH0.CLIENT_ID,
-          domain: AUTH0.DOMAIN,
-          redirect_uri: AUTH0.REDIRECT_URI,
-          returnTo: BASE_URL
-        }}>
-          <NavigatorBarComponent />
-          <AuthorizationComponent>
-            <Outlet />
-          </AuthorizationComponent>
-        </AuthenticationComponent>
+        <NavigatorBarComponent />
+          <Outlet />
         <FooterComponent />
         <script
           dangerouslySetInnerHTML={{

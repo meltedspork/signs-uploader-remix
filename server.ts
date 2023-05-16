@@ -6,7 +6,8 @@ import compression from "compression";
 import express from "express";
 import morgan from "morgan";
 
-import firebaseSessionMiddleware from './app/middlewares/firebase-session.server';
+import firebaseSession from './app/middlewares/firebase-session.server';
+// import checkAuth0Jwt from './app/middlewares/check-auth0-jwt.server';
 
 const app = express();
 const metricsApp = express();
@@ -17,7 +18,8 @@ app.use(
     metricsApp,
   })
 );
-app.use(firebaseSessionMiddleware);
+app.use(firebaseSession);
+// app.use(checkAuth0Jwt);
 
 app.use((req, res, next) => {
   // helpful headers:
@@ -94,6 +96,14 @@ app.all(
         return requestHandler(...args);
       }
 );
+
+app.use((err: any, _req: any, res: any, next: any) => {
+  if (err.name === 'UnauthorizedError') {
+    res.redirect('/');
+  } else {
+    next(err);
+  }
+});
 
 const port = process.env.PORT || 3000;
 
