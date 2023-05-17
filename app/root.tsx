@@ -22,10 +22,10 @@ import tailwindStylesheetUrl from "~/styles/tailwind.css";
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
 
-import AuthenticationComponent from '~/components/authentication.client';
-import AuthorizationComponent from '~/components/authorization.client';
-import NavigatorBarComponent from '~/components/navigator-bar.client';
-import FooterComponent from '~/components/footer.client';
+import AuthenticationComponent from '~/components/authentication.component';
+import AuthorizationComponent from '~/components/authorization.component';
+import NavigatorBarComponent from '~/components/navigator-bar.component';
+import FooterComponent from '~/components/footer.component';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStylesheetUrl },

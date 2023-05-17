@@ -1,6 +1,6 @@
 import type { V2_MetaFunction } from '@remix-run/node';
 
-import HomeComponent from '~/components/home.client';
+import HomeComponent from '~/components/home.component';
 
 import { useOptionalUser } from '~/utils';
 
