@@ -1,64 +1,38 @@
-import type { ActionArgs, HeadersFunction, LoaderArgs } from '@remix-run/node';
-import { verifyIdToken, USER_JWT_KEY } from '~/servers/jwt.server';
+import { ActionArgs, HeadersFunction, LoaderArgs, json } from '@remix-run/node';
+import { verifyIdToken } from '~/servers/auth0-jwt.server';
 
 import { useContext, useEffect, useState } from 'react';
 // import { useAuth0 } from '@auth0/auth0-react';
+
+import firebaseSession from '~/middlewares/firebase-session.server';
+// import checkJwt from '~/middlewares/check-auth0-jwt.server';
+
+import { getUser, sessionStorage } from '~/servers/session.server';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 // import Grid from '@material-ui/core/Grid';
 import Typography from '@mui/material/Typography';
+import { useLoaderData } from '@remix-run/react';
 
-export const loader = async ({ params, request }: LoaderArgs) => {
-  console.log('requestrequest:', request);
-  const jwt = await verifyIdToken(request);
-  console.log('jwwwwt!!:', jwt);
-  return jwt;
+export const loader = async ({ params, request, context }: LoaderArgs) => {
+  return json({
+    user: await getUser(request, context)
+  });
 };
 
 export default function Profile() {
+  const { user } = useLoaderData<typeof loader>();
+  console.log('user--->', user);
 //  const config = useContext(ApiContext);
     // const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
     const [currentStatus, setCurrentStatus] = useState({});
-  // useEffect(() => {
-  //   const getCurrentStatus = async () => {
-  //     const {
-  //       apiBaseUrl,
-  //       data: {
-  //         audience
-  //       }
-  //     } = config;
 
-  //     try {
-  //       const accessToken = await getAccessTokenSilently({
-  //         audience,
-  //         scope: 'read:signs',
-  //       });
-  
-  //       const userDetailsByIdUrl = `${apiBaseUrl}/status`;
-  
-  //       const metadataResponse = await fetch(userDetailsByIdUrl, {
-  //         credentials: 'include',
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       });
-  
-  //       const data = await metadataResponse.json();
-
-  //       setCurrentStatus(data);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  
-  //   getCurrentStatus();
-  // }, [getAccessTokenSilently, config]);
-  const user = {
-    picture: 'picture',
-    name: 'name',
-  }
+  // const user = {
+  //   picture: 'picture',
+  //   name: 'name',
+  // }
 
   return (
     <main>

@@ -1,11 +1,17 @@
+import { redirect } from '@remix-run/server-runtime';
 import type { Algorithm, VerifyOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import type { Auth0JwtAccessToken, Auth0JwtIdToken } from '~/modules/auth0-jwt.server';
+import { auth0Client } from '~/modules/auth0-jwt.server';
 
 import { logout } from '~/servers/session.server';
 
 
-const verifyBaseJwtToken = async (token: string, options: VerifyOptions) => {
+async function verifyBaseJwtToken(
+  token: string,
+  options: VerifyOptions
+): Promise<Auth0JwtIdToken | Auth0JwtAccessToken> {
   const client: jwksClient.JwksClient = jwksClient({
     cache: true,
     rateLimit: true,
@@ -33,10 +39,16 @@ const verifyBaseJwtToken = async (token: string, options: VerifyOptions) => {
 }
 
 export async function verifyTokens(jwt: any) {
-  await verifyAccessToken(jwt);
-  await verifyIdToken(jwt);
+  try {
+    console.log('verifyTokens: jwt', jwt);
 
-  return jwt;
+    await verifyAccessToken(jwt);
+    await verifyIdToken(jwt);
+
+    return refreshAccessToken(jwt);
+  } catch (err) {
+    throw ('verifyTokens: ' + err);
+  }
 };
 
 export async function verifyIdToken({ id_token: idToken }: any) {
@@ -47,7 +59,7 @@ export async function verifyIdToken({ id_token: idToken }: any) {
   }
 
   try {
-    const idTokenVerified: any = await verifyBaseJwtToken(idToken, verifyOpts);
+    const idTokenVerified: Auth0JwtIdToken = await verifyBaseJwtToken(idToken, verifyOpts);
     /*
     {
       nickname: string;
@@ -62,10 +74,12 @@ export async function verifyIdToken({ id_token: idToken }: any) {
       sid: string;
     }
     */
-
+    console.log('verifyIdToken: idTokenVerified:', idTokenVerified);
     return idTokenVerified;
   } catch (err) {
-    throw ('verifyBaseJwtToken: ' + err);
+    throw (`verifyIdToken: ${err}`);
+    // return err;
+    // return redirect('/');
   }
 }
 
@@ -83,5 +97,18 @@ export async function verifyAccessToken({ access_token: accessToken }: any) {
     return await verifyBaseJwtToken(accessToken, verifyOpts);
   } catch (err) {
     throw ('verifyAccessToken: ' + err);
+  }
+}
+
+export async function refreshAccessToken({ refresh_token }: any) {
+  try {
+    const result = await auth0Client({
+      grant_type: 'refresh_token',
+      refresh_token
+    })
+    console.log('result', result);
+    return result;
+  } catch (err) {
+    return false;
   }
 }

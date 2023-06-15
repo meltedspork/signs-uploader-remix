@@ -1,6 +1,4 @@
-import * as React from 'react';
 import { useNavigate } from '@remix-run/react';
-// import { useAuth0 } from '@auth0/auth0-react';
 
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
@@ -31,6 +29,10 @@ const NavigatorBarComponent = (props: any) => {
   }
  
   console.log('props: ', props);
+  const loading = () => {
+    console.log('worked yet?');
+  }
+
 
   return (
     <AppBar
@@ -40,58 +42,49 @@ const NavigatorBarComponent = (props: any) => {
       sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
     >
       <Toolbar sx={{ flexWrap: 'wrap' }}>
-          <Link
-            href='/'
-            variant='h6'
-            color='inherit'
-            noWrap sx={{ flexGrow: 1 }}
-            style={{ textDecoration:'none' }}
-          >
-            Signs Uploader
-          </Link>
-          {isAuthenticated ?
-        <nav>
-      <IconButton
-        onClick={() =>
-        navigate('/profile')}
-      >
-        <Avatar alt={user?.nickname} src={user?.picture} />
-        <Typography
-          variant='button'
-          color='text.primary'
-          sx={{ my: 1, mx: 1.5 }}
+        <Link
+          href='/'
+          variant='h6'
+          color='inherit'
+          noWrap sx={{ flexGrow: 1 }}
+          style={{ textDecoration:'none' }}
         >
-          Heyoo {user?.nickname}!
-        </Typography>
-      </IconButton>
-                <Button
-                  onClick={() => navigate('/logout')}
-                  variant='outlined'
-                  sx={{ my: 1, mx: 1.5 }}
-                >
-                  Logout
-                </Button>
-              </nav>
-              :
-              <React.Fragment>
-                  <Button
-                  onClick={() => navigate('/logout')}
-                  variant='outlined'
-                  sx={{ my: 1, mx: 1.5 }}
-                >
-                  Logout
-                </Button>
-                <Button
-                onClick={() => navigate('/login')}
-                variant='outlined'
+          Signs Uploader
+        </Link>
+        {isAuthenticated ?
+          <nav>
+            <IconButton
+              onClick={() =>
+              navigate('/profile')}
+            >
+              <Avatar alt={user?.nickname} src={user?.picture} />
+              <Typography
+                variant='button'
+                color='text.primary'
                 sx={{ my: 1, mx: 1.5 }}
               >
-                Login
-              </Button>
-              </React.Fragment>
-            }
-          </Toolbar>
-        </AppBar>
+                Heyoo {user?.nickname}!
+              </Typography>
+            </IconButton>
+            <Button
+              onClick={() => navigate('/logout')}
+              variant='outlined'
+              sx={{ my: 1, mx: 1.5 }}
+            >
+              Logout
+            </Button>
+          </nav>
+        :
+          <Button
+            onClick={() => navigate('/login')}
+            variant='outlined'
+            sx={{ my: 1, mx: 1.5 }}
+          >
+            Login
+          </Button>
+        }
+      </Toolbar>
+    </AppBar>
   );
 }
 
