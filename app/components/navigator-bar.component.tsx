@@ -42,13 +42,13 @@ const NavigatorBarComponent = ({
               onClick={() =>
               navigate('/profile')}
             >
-              <Avatar alt={user.nickname} src={user.picture} />
+              <Avatar alt={user?.nickname} src={user?.picture} />
               <Typography
                 variant='button'
                 color='text.primary'
                 sx={{ my: 1, mx: 1.5 }}
               >
-                Heyoo {user.nickname}!
+                Heyoo {user?.nickname}!
               </Typography>
             </IconButton>
             <Button
