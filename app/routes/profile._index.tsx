@@ -24,7 +24,7 @@ export const loader = async ({ params, request, context }: LoaderArgs) => {
 
 export default function Profile() {
   const { user } = useLoaderData<typeof loader>();
-  console.log('user--->', user);
+  console.log('Profile: user--->', user);
 //  const config = useContext(ApiContext);
     // const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
     const [currentStatus, setCurrentStatus] = useState({});

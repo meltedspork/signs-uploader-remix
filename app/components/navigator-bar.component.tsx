@@ -7,32 +7,17 @@ import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import { Auth0JwtIdToken } from '~/modules/auth0-jwt.server';
 
-const NavigatorBarComponent = (props: any) => {
-
+const NavigatorBarComponent = ({
+  isAuthenticated,
+  userProfile: user
+}: {
+  isAuthenticated: boolean;
+  userProfile: Auth0JwtIdToken | null
+}) => {
   const navigate = useNavigate();
-
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (error) {
-  //   return <div>Oops... {error.message}</div>;
-  // }
-
-  // const loginWithRedirect = (msg = 'naka') => console.log(msg);
-  // const logout = (msg = 'noko') => console.log(msg)
-  const isAuthenticated = false;
-  const user = {
-    nickname: 'nickname',
-    picture: 'picture.jpg',
-  }
- 
-  console.log('props: ', props);
-  const loading = () => {
-    console.log('worked yet?');
-  }
-
+  console.log('profile: ', user);
 
   return (
     <AppBar
@@ -57,13 +42,13 @@ const NavigatorBarComponent = (props: any) => {
               onClick={() =>
               navigate('/profile')}
             >
-              <Avatar alt={user?.nickname} src={user?.picture} />
+              <Avatar alt={user.nickname} src={user.picture} />
               <Typography
                 variant='button'
                 color='text.primary'
                 sx={{ my: 1, mx: 1.5 }}
               >
-                Heyoo {user?.nickname}!
+                Heyoo {user.nickname}!
               </Typography>
             </IconButton>
             <Button

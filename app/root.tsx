@@ -29,7 +29,10 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request, context }: LoaderArgs) => {
+  const userProfile = await getUser(request, context);
   return json({
+    userProfile,
+    isAuthenticated: !!userProfile
     // ENV: {
     //   NODE_ENV: process.env.NODE_ENV,
     //   BASE_URL: process.env.REACT_APP_API_BASE_URL
@@ -41,6 +44,12 @@ export default function App() {
   // const constants = useLoaderData<typeof loader>();
   // const { BASE_URL } = constants.ENV;
   // console.log('constants:', constants);
+  const {
+    userProfile,
+    isAuthenticated
+  } = useLoaderData<typeof loader>();
+  console.log('Profile: userProfile --->', userProfile);
+  console.log('Profile: isAuthenticated --->', isAuthenticated);
 
   return (
     <html lang="en" className="h-full">
@@ -53,7 +62,9 @@ export default function App() {
       <body className="h-full">
         <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
         <CssBaseline />
-        <NavigatorBarComponent />
+        <NavigatorBarComponent
+          userProfile={userProfile}
+          isAuthenticated={isAuthenticated} />
           <Outlet />
         <FooterComponent />
         {/* <script
