@@ -21,7 +21,7 @@ const createFirebaseSessionStorage = ({
   | undefined
 }) => {
   const db = firebaseAdmin.database();
-  const sessionRef = db.ref(process.env.SESSION_SECRET);
+  const sessionRef = db.ref(cookie?.name);
 
   return createSessionStorage({
     cookie,

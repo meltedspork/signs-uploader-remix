@@ -1,13 +1,17 @@
 import { AppLoadContext, createCookieSessionStorage, redirect } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
-import type { User } from '~/models/user.server';
 import { getUserById } from '~/models/user.server';
-
-import type { Auth0Jwt, Auth0JwtIdToken } from '~/modules/auth0-jwt.server';
-import { verifyIdToken, verifyTokens } from '~/servers/auth0-jwt.server';
+import { verifyIdToken, verifyJwtTokens } from '~/servers/auth0-jwt.server';
 
 import fireSession from '~/servers/firebase-session.server';
+
+import type { User } from '~/models/user.server';
+import type {
+  Auth0Jwt,
+  Auth0JwtAccessToken,
+  Auth0JwtIdToken
+} from '~/modules/auth0-jwt.server';
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set');
 
@@ -67,20 +71,40 @@ export async function getUser(
   request: Request,
   context: AppLoadContext
 ) {
-  // console.log('!!!!!!! getUser');
-  const session = await getSession(request, context);
-  const jwtToken = await session.get(SESSION_JWT_TOKEN_KEY);
+  try {
+    // console.log('!!!!!!! getUser');
+    const session = await getSession(request, context);
+    const jwtToken = await session.get(SESSION_JWT_TOKEN_KEY);
 
-  const userId = await getUserId(request, context);
-  console.log('!!!!!userId', userId);
-  if (userId === undefined) return null;
-  console.log('!!!!!------!!!!!!!');
-  const user = await getUserById(userId);
-  console.log('!!!!!user', user);
+    const userId = await getUserId(request, context);
+    console.log('!!!!!userId', userId);
+    if (userId === undefined) return null;
+    console.log('!!!!!------!!!!!!!');
+    const user = await getUserById(userId);
+    console.log('!!!!!user', user);
 
-  if (user) return verifyIdToken(jwtToken);
-  console.log('!!!!!user-------!!');
-  throw await logout(request);
+    if (user) {
+      const {
+        accessToken,
+        idToken
+      }: {
+        accessToken: Auth0JwtAccessToken,
+        idToken: Auth0JwtIdToken
+      } = await verifyJwtTokens(jwtToken);
+      console.log('**accessToken: ', accessToken);
+      console.log('**idToken: ', idToken);
+      // should we check and refresh here when expired maybe?
+      return {
+        accessToken,
+        idToken
+      };
+    };
+    console.log('!!!!!user-------!!');
+    throw await logout(request);
+  } catch (err) {
+    console.log('AHHHHH!!');
+    throw await logout(request);
+  }
 }
 
 export async function requireUserId(
@@ -154,11 +178,41 @@ export async function createUserSession({
   });
 }
 
+// export async function updateUserSession(
+//   request,
+//   userJwt,
+//   userId,
+// }: {
+//   request: Request;
+//   redirectTo: string;
+//   userJwt: Auth0Jwt;
+//   userId: string;
+// }) {
+//   const session: any = await getSession(request);
+
+//   session.set(SESSION_USER_ID_KEY, userId);
+//   session.set(SESSION_JWT_TOKEN_KEY, userJwt);
+//   const testData = await sessionStorage.commitSession(session, {
+//     maxAge: 60 * 60 * 24 * 7
+//   });
+// };
+
 export async function logout(request: Request) {
   const session = await getSession(request);
+  session.unset(SESSION_USER_ID_KEY);
+  session.unset(SESSION_JWT_TOKEN_KEY);
+  const userId = await session.get(SESSION_USER_ID_KEY);
+  console.log('logout: userId', userId);
+  const jwtToken = await session.get(SESSION_JWT_TOKEN_KEY);
+  console.log('logout: jwtToken', jwtToken);
   return redirect('/', {
     headers: {
       'Set-Cookie': await sessionStorage.destroySession(session)
     }
   });
 }
+
+
+/*
+    const accessToken: Auth0JwtAccessToken = await verifyAccessToken(jwt);
+    */

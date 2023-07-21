@@ -17,8 +17,10 @@ import Typography from '@mui/material/Typography';
 import { useLoaderData } from '@remix-run/react';
 
 export const loader = async ({ params, request, context }: LoaderArgs) => {
+  const user = await getUser(request, context);
+  console.log('Profile: loader: user', user);
   return json({
-    user: await getUser(request, context)
+    user: user?.idToken
   });
 };
 

@@ -2,10 +2,10 @@ const axios = require('axios');
 
 export interface Auth0Jwt {
   access_token: string;
-  refresh_token: string;
-  id_token: string;
-  scope: string;
   expires_in: number;
+  id_token: string;
+  refresh_token: string;
+  scope: string;
   token_type: string;
 }
 
@@ -26,6 +26,8 @@ export interface Auth0JwtIdToken {
   name: string; //email
   picture: string;
   updated_at: string;
+  email: string;
+  email_verified: boolean;
   iss: string;
   aud: string;
   iat: number;
@@ -34,9 +36,7 @@ export interface Auth0JwtIdToken {
   sid: string;
 }
 
-type GrantType =
-  | 'authorization_code'
-  | 'refresh_token';
+type GrantType = 'authorization_code' | 'refresh_token';
 
 export interface Auth0JwtCode {
   grant_type: GrantType;
@@ -51,7 +51,7 @@ export interface Auth0JwtRefreshToken {
 
 export async function auth0Client(
   searchParams: Auth0JwtCode | Auth0JwtRefreshToken
-) {
+): Promise<Auth0Jwt> {
   const options = {
     method: 'POST',
     url: `${process.env.AUTH0_DOMAIN!}/oauth/token`,

@@ -33,17 +33,10 @@ export const loader = async ({ request, context }: LoaderArgs) => {
   return json({
     userProfile,
     isAuthenticated: !!userProfile
-    // ENV: {
-    //   NODE_ENV: process.env.NODE_ENV,
-    //   BASE_URL: process.env.REACT_APP_API_BASE_URL
-    // },
   });
 };
 
 export default function App() {
-  // const constants = useLoaderData<typeof loader>();
-  // const { BASE_URL } = constants.ENV;
-  // console.log('constants:', constants);
   const {
     userProfile,
     isAuthenticated
@@ -67,11 +60,6 @@ export default function App() {
           isAuthenticated={isAuthenticated} />
           <Outlet />
         <FooterComponent />
-        {/* <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(constants.ENV)}`
-          }}
-        /> */}
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
