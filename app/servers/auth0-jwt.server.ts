@@ -1,4 +1,3 @@
-import { redirect } from '@remix-run/server-runtime';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { auth0Client } from '~/modules/auth0-jwt.server';
@@ -10,8 +9,6 @@ import type {
   Auth0JwtIdToken,
   Auth0JwtRefreshToken
 } from '~/modules/auth0-jwt.server';
-import { logout } from '~/servers/session.server';
-
 
 async function verifyBaseJwtToken(
   token: string,
@@ -21,7 +18,7 @@ async function verifyBaseJwtToken(
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: process.env.AUTH0_JWKS_URI!
+    jwksUri: process.env.AUTH0_JWKS_URI
   });
 
   const getKey = async (header: any, callback: Function) => {
@@ -57,15 +54,16 @@ export async function verifyJwtTokens(jwt: Auth0Jwt): Promise<{
       idToken
     });
   } catch (err) {
+    console.log('verifyTokens: err', err);
     throw ('verifyTokens: ' + err);
   }
 };
 
 export async function verifyIdToken({ id_token: idToken }: Auth0Jwt): Promise<Auth0JwtIdToken> {
   const verifyOpts: VerifyOptions = {
-    audience: process.env.AUTH0_CLIENT_ID!,
-    issuer: process.env.AUTH0_ISSUER!,
-    algorithms: <Algorithm[]>(process.env.AUTH0_ALGORITHMS!.split(','))
+    audience: process.env.AUTH0_CLIENT_ID,
+    issuer: process.env.AUTH0_ISSUER,
+    algorithms: <Algorithm[]>(process.env.AUTH0_ALGORITHMS.split(','))
   }
 
   try {
@@ -81,11 +79,11 @@ export async function verifyIdToken({ id_token: idToken }: Auth0Jwt): Promise<Au
 export async function verifyAccessToken({ access_token: accessToken }: Auth0Jwt): Promise<Auth0JwtAccessToken> {
   const verifyOpts: VerifyOptions = {
     audience: [
-      process.env.AUTH0_AUDIENCE!,
-      "https://meltedspork.us.auth0.com/userinfo"
+      process.env.AUTH0_AUDIENCE,
+      `${process.env.AUTH0_DOMAIN}/userinfo`
     ],
-    issuer: process.env.AUTH0_ISSUER!,
-    algorithms: <Algorithm[]>(process.env.AUTH0_ALGORITHMS!.split(','))
+    issuer: process.env.AUTH0_ISSUER,
+    algorithms: <Algorithm[]>(process.env.AUTH0_ALGORITHMS.split(','))
   }
 
   try {

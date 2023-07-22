@@ -1,13 +1,14 @@
 import { createSessionStorage } from '@remix-run/node';
+import firebaseAdmin from '~/servers/firebase-admin.server';
+
 import type {
   CookieParseOptions,
   CookieSerializeOptions,
   CookieSignatureOptions,
   Cookie
 } from '@remix-run/node';
-import firebaseAdmin from '~/servers/firebase.server';
 
-const createFirebaseSessionStorage = ({
+const createFirebaseCookieSessionStorage = ({
   cookie
 }: { 
   cookie: Cookie | (
@@ -15,7 +16,7 @@ const createFirebaseSessionStorage = ({
       & CookieSerializeOptions
       & CookieSignatureOptions
       & {
-        name?: string;
+        name: string;
       }
     )
   | undefined
@@ -25,34 +26,21 @@ const createFirebaseSessionStorage = ({
 
   return createSessionStorage({
     cookie,
-    async createData(data, expires) {
-      console.log('createData: data', data);
-      console.log('createData: expires', expires);
+    async createData(data, _expires) {
       const session = await sessionRef.push(data);
       // `expires` is a Date after which the data should be considered
       // invalid. You could use it to invalidate the data somehow or
       // automatically purge this record from your database.
-      //const id = await db.insert(data);
-      console.log('createData: session.key', session.key);
       return session.key;
     },
     async readData(id) {
-      console.log('readData: id', id);
-      // return (await db.select(id)) || null;
       const session = await sessionRef.child(id).once('value');
-      console.log('readData: session.key', session.key);
-      console.log('readData: session.val()', session.val());
       return session.val();
     },
     async updateData(id, data, expires) {
-      console.log('updateData: id', id);
-      console.log('updateData: data', data);
-      console.log('updateData: expires', expires);
       await sessionRef.child(id).update(data);
     },
     async deleteData(id) {
-      console.log('deleteData: id', id);
-      console.log('deleteData: !!id', !!id);
       if (!!id) {
         await sessionRef.child(id).remove();
       }
@@ -60,4 +48,4 @@ const createFirebaseSessionStorage = ({
   });
 }
 
-export default createFirebaseSessionStorage;
+export default createFirebaseCookieSessionStorage;

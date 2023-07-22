@@ -9,8 +9,10 @@ export interface Auth0Jwt {
   token_type: string;
 }
 
+const AUTH0_ACCESS_TOKEN_DOMAIN: unique symbol = Symbol(process.env.AUTH0_ACCESS_TOKEN_DOMAIN);
+
 export interface Auth0JwtAccessToken {
-  'https://www.deafblind.dev/admin': boolean;
+  [AUTH0_ACCESS_TOKEN_DOMAIN]: boolean;
   iss: string;
   sub: string;
   aud: [string];
@@ -54,18 +56,18 @@ export async function auth0Client(
 ): Promise<Auth0Jwt> {
   const options = {
     method: 'POST',
-    url: `${process.env.AUTH0_DOMAIN!}/oauth/token`,
+    url: `${process.env.AUTH0_DOMAIN}/oauth/token`,
     headers: {
       'content-type': 'application/x-www-form-urlencoded'
     },
     data: new URLSearchParams({
-      client_id: process.env.AUTH0_CLIENT_ID!,
-      client_secret: process.env.AUTH0_CLIENT_SECRET!,
+      client_id: process.env.AUTH0_CLIENT_ID,
+      client_secret: process.env.AUTH0_CLIENT_SECRET,
       ...searchParams
     })
   };
 
-  const result = await axios.request(options);
-  console.log('auth0Client: result', result);
-  return result;
+  const { data } = await axios.request(options);
+  console.log('auth0Client: data', data);
+  return data;
 }

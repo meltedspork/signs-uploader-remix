@@ -28,10 +28,10 @@ export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
-export const loader = async ({ request, context }: LoaderArgs) => {
-  const userProfile = await getUser(request, context);
+export const loader = async ({ request }: LoaderArgs) => {
+  const userProfile = await getUser(request);
   return json({
-    userProfile,
+    userProfile: userProfile?.idToken,
     isAuthenticated: !!userProfile
   });
 };

@@ -2,12 +2,8 @@ import { ActionArgs, HeadersFunction, LoaderArgs, json } from '@remix-run/node';
 import { verifyIdToken } from '~/servers/auth0-jwt.server';
 
 import { useContext, useEffect, useState } from 'react';
-// import { useAuth0 } from '@auth0/auth0-react';
 
-import firebaseSession from '~/middlewares/firebase-session.server';
-// import checkJwt from '~/middlewares/check-auth0-jwt.server';
-
-import { getUser, sessionStorage } from '~/servers/session.server';
+import { getUser } from '~/servers/session.server';
 
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -16,8 +12,8 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { useLoaderData } from '@remix-run/react';
 
-export const loader = async ({ params, request, context }: LoaderArgs) => {
-  const user = await getUser(request, context);
+export const loader = async ({ params, request }: LoaderArgs) => {
+  const user = await getUser(request);
   console.log('Profile: loader: user', user);
   return json({
     user: user?.idToken
