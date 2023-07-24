@@ -7,17 +7,17 @@ import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { Auth0JwtIdToken } from '~/modules/auth0-jwt.server';
+import type { UserData } from '~/modules/user-serialization.server';
 
 const NavigatorBarComponent = ({
-  isAuthenticated,
-  userProfile: user
+  user,
+  userAuthenticated
 }: {
-  isAuthenticated: boolean;
-  userProfile: Auth0JwtIdToken | null
+  user: UserData | null;
+  userAuthenticated: boolean;
 }) => {
   const navigate = useNavigate();
-  console.log('profile: ', user);
+  console.log('user: ', user);
 
   return (
     <AppBar
@@ -36,19 +36,19 @@ const NavigatorBarComponent = ({
         >
           Signs Uploader
         </Link>
-        {isAuthenticated ?
+        {userAuthenticated ?
           <nav>
             <IconButton
               onClick={() =>
               navigate('/profile')}
             >
-              <Avatar alt={user?.nickname} src={user?.picture} />
+              <Avatar alt={user?.name} src={user?.pictureImgPath} />
               <Typography
                 variant='button'
                 color='text.primary'
                 sx={{ my: 1, mx: 1.5 }}
               >
-                Heyoo {user?.nickname}!
+                Heyoo {user?.name}!
               </Typography>
             </IconButton>
             <Button

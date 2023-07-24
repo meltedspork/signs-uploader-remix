@@ -4,7 +4,6 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -13,7 +12,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData
+  useLoaderData,
+  useOutletContext
 } from "@remix-run/react";
 
 import { getUser } from "~/servers/session.server";
@@ -24,25 +24,46 @@ import GlobalStyles from '@mui/material/GlobalStyles';
 import NavigatorBarComponent from '~/components/navigator-bar.component';
 import FooterComponent from '~/components/footer.component';
 
+import type { LinksFunction, LoaderArgs } from "@remix-run/node";
+import type { UserData } from './modules/user-serialization.server';
+import { useEffect, useState } from 'react';
+
+type ContextType = {
+  user: UserData | null;
+  userAuthenticated: boolean;
+};
+
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const userProfile = await getUser(request);
+  const {
+    userData,
+    isAuthenticated
+  } = await getUser(request);
   return json({
-    userProfile: userProfile?.idToken,
-    isAuthenticated: !!userProfile
+    userData,
+    isAuthenticated
   });
 };
 
 export default function App() {
   const {
-    userProfile,
+    userData,
     isAuthenticated
   } = useLoaderData<typeof loader>();
-  console.log('Profile: userProfile --->', userProfile);
-  console.log('Profile: isAuthenticated --->', isAuthenticated);
+
+  const [user, setUser] = useState<UserData | null>(null);
+  const [userAuthenticated, setUserAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    setUser(userData);
+    setUserAuthenticated(isAuthenticated);
+  }, [
+    userData, setUser,
+    isAuthenticated, setUserAuthenticated
+  ]);
 
   return (
     <html lang="en" className="h-full">
@@ -56,9 +77,9 @@ export default function App() {
         <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
         <CssBaseline />
         <NavigatorBarComponent
-          userProfile={userProfile}
-          isAuthenticated={isAuthenticated} />
-          <Outlet />
+          user={userData}
+          userAuthenticated={isAuthenticated} />
+          <Outlet context={{ user, userAuthenticated }} />
         <FooterComponent />
         <ScrollRestoration />
         <Scripts />
@@ -66,4 +87,8 @@ export default function App() {
       </body>
     </html>
   );
+}
+
+export function useUser() {
+  return useOutletContext<ContextType>();
 }

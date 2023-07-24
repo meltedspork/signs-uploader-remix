@@ -2,7 +2,7 @@ import { AppLoadContext, SessionData, redirect } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 import { getUserById } from '~/models/user.server';
 import { verifyIdToken, verifyJwtTokens } from '~/servers/auth0-jwt.server';
-
+import { idTokenSerialized } from '~/modules/user-serialization.server';
 import firebaseCookieSessionStorage from '~/servers/frebase-cookie-session-storage.server';
 
 import type { User } from '~/models/user.server';
@@ -11,6 +11,7 @@ import type {
   Auth0JwtAccessToken,
   Auth0JwtIdToken
 } from '~/modules/auth0-jwt.server';
+import { UserData } from '~/modules/user-serialization.server';
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set');
 
@@ -48,7 +49,15 @@ export async function getUserId(request: Request): Promise<User['id'] | undefine
   }
 }
 
-export async function getUser(request: Request) {
+export async function getUser(request: Request): Promise<{
+  userData: UserData | null;
+  isAuthenticated: boolean;
+}> {
+  const notAuthenticatedUserData = Promise.resolve({
+    userData: null,
+    isAuthenticated: false
+  });
+
   try {
     const session: SessionData = await getSession(request);
     const jwtToken = await session.get(SESSION_JWT_TOKEN_KEY);
@@ -61,7 +70,7 @@ export async function getUser(request: Request) {
     // console.log('!!!!!user', user);
     const user = true;
 
-    if (user && jwtToken) {
+    if (user) {
       const {
         accessToken,
         idToken
@@ -69,19 +78,18 @@ export async function getUser(request: Request) {
         accessToken: Auth0JwtAccessToken,
         idToken: Auth0JwtIdToken
       } = await verifyJwtTokens(jwtToken);
-      console.log('**accessToken: ', accessToken);
-      console.log('**idToken: ', idToken);
+
       // should we check and refresh here when expired maybe?
-      return {
-        accessToken,
-        idToken
-      };
+
+      return Promise.resolve({
+        userData: idTokenSerialized(idToken),
+        isAuthenticated: true
+      });
     };
 
-    // throw await logout(request);
+    return notAuthenticatedUserData;
   } catch (err) {
-    console.log('AHHHHH!!');
-    // throw await logout(request);
+    return notAuthenticatedUserData;
   }
 }
 
@@ -103,7 +111,7 @@ export async function requireUser(request: Request) {
   const user = await getUserById(userId);
   if (user) return user;
 
-  throw await logout(request);
+  throw redirect('/logout');
 }
 
 export async function createUserSession({
@@ -147,13 +155,9 @@ export async function getUserAccessTokenSession(request: Request): Promise<Auth0
 //   userJwt: Auth0Jwt;
 //   userId: string;
 // }) {
-//   const session: any = await getSession(request);
-
-//   session.set(SESSION_USER_ID_KEY, userId);
-//   session.set(SESSION_JWT_TOKEN_KEY, userJwt);
-//   const testData = await sessionStorage.commitSession(session, {
-//     maxAge: 60 * 60 * 24 * 7
-//   });
+//    NOTE: to be implemented for refresh token
+//    // maybe use this method
+//    const accessToken: Auth0JwtAccessToken = await verifyAccessToken(jwt);
 // };
 
 export async function logout(request: Request) {
@@ -168,8 +172,3 @@ export async function logout(request: Request) {
     }
   });
 }
-
-
-/*
-    const accessToken: Auth0JwtAccessToken = await verifyAccessToken(jwt);
-    */
