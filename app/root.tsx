@@ -17,6 +17,7 @@ import {
 } from "@remix-run/react";
 
 import { getUser } from "~/servers/session.server";
+import stylesheet from "~/tailwind.css";
 
 import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
@@ -34,6 +35,7 @@ type ContextType = {
 };
 
 export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
