@@ -35,8 +35,8 @@ async function verifyBaseJwtToken(
         resolve(decoded);
       });
     });
-  } catch(err) {
-    return Promise.reject(err);
+  } catch(exception) {
+    return Promise.reject(exception);
   }
 }
 
@@ -53,9 +53,9 @@ export async function verifyJwtTokens(jwt: Auth0Jwt): Promise<{
       accessToken,
       idToken
     });
-  } catch (err) {
-    console.log('verifyTokens: err', err);
-    throw ('verifyTokens: ' + err);
+  } catch (exception) {
+    console.log('verifyTokens: exception', exception);
+    return Promise.reject(exception);
   }
 };
 
@@ -68,11 +68,9 @@ export async function verifyIdToken({ id_token: idToken }: Auth0Jwt): Promise<Au
 
   try {
     return verifyBaseJwtToken(idToken, verifyOpts);
-  } catch (err) {
-    throw ('verifyBaseJwtToken: ' + err);
-    // return throw (`verifyIdToken: ${err}`);
-    // return err;
-    // return redirect('/');
+  } catch (exception) {
+    console.log('verifyIdToken: exception', exception);
+    return Promise.reject(exception);
   }
 }
 
@@ -88,8 +86,10 @@ export async function verifyAccessToken({ access_token: accessToken }: Auth0Jwt)
 
   try {
     return verifyBaseJwtToken(accessToken, verifyOpts);
-  } catch (err) {
-    throw ('verifyAccessToken: ' + err);
+  } catch (exception) {
+
+    console.log('verifyAccessToken: exception', exception);
+    return Promise.reject(exception);
   }
 }
 
@@ -102,8 +102,8 @@ export async function refreshAccessToken({ refresh_token }: Auth0JwtRefreshToken
     });
     console.log('result', result);
     return result;
-  } catch (err) {
-    console.log('refreshAccessToken: err', err);
-    return false;
+  } catch (exception) {
+    console.log('refreshAccessToken: exception', exception);
+    return Promise.reject(exception);
   }
 }

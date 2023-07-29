@@ -1,4 +1,5 @@
-const axios = require('axios');
+//const axios = require('axios');
+import axios, { AxiosError } from 'axios';
 
 export interface Auth0Jwt {
   access_token: string;
@@ -53,21 +54,31 @@ export interface Auth0JwtRefreshToken {
 
 export async function auth0Client(
   searchParams: Auth0JwtCode | Auth0JwtRefreshToken
-): Promise<Auth0Jwt> {
-  const options = {
-    method: 'POST',
-    url: `${process.env.AUTH0_DOMAIN}/oauth/token`,
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    },
-    data: new URLSearchParams({
-      client_id: process.env.AUTH0_CLIENT_ID,
-      client_secret: process.env.AUTH0_CLIENT_SECRET,
-      ...searchParams
-    })
-  };
+): Promise<any> {
+  try {
+    const { data }: any = await axios({
+      method: 'POST',
+      url: `${process.env.AUTH0_DOMAIN}/oauth/token`,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: new URLSearchParams({
+        client_id: process.env.AUTH0_CLIENT_ID,
+        client_secret: process.env.AUTH0_CLIENT_SECRET,
+        ...searchParams
+      })
+    }).catch((error) => {
+      return error.response;
+    });
 
-  const { data } = await axios.request(options);
-  console.log('auth0Client: data', data);
-  return data;
+    console.log('auth0Client: data', data);
+    if (data.error) {
+      console.log('auth0Client: error');
+      return Promise.reject(data);
+    }
+    return Promise.resolve(data);
+  } catch (exception) {
+    console.log('auth0Client: exception', exception);
+    return Promise.reject(exception);
+  }
 }

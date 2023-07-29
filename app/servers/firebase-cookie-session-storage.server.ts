@@ -37,8 +37,8 @@ const createFirebaseCookieSessionStorage = ({
       const session = await sessionRef.child(id).once('value');
       return session.val();
     },
-    async updateData(id, data, expires) {
-      await sessionRef.child(id).update(data);
+    async updateData(id, data, _expires) {
+      return await sessionRef.child(id).update(data);
     },
     async deleteData(id) {
       if (!!id) {

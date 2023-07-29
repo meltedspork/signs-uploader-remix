@@ -1,4 +1,5 @@
 import { redirect } from "@remix-run/node";
+import { ROOT_REDIRECT_URL } from "~/constants";
 
 export const loader = async () => {
   const loginWithRedirectUrl: URL = new URL(`${process.env.AUTH0_DOMAIN}/authorize`);
@@ -17,4 +18,4 @@ export const loader = async () => {
   return redirect(loginWithRedirectUrl.toString());
 };
 
-export const action = async () => redirect('/');
+export const action = async () => redirect(ROOT_REDIRECT_URL);

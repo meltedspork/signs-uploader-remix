@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { cssBundleHref } from "@remix-run/css-bundle";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -26,11 +26,12 @@ import NavigatorBarComponent from '~/components/navigator-bar.component';
 import FooterComponent from '~/components/footer.component';
 
 import type { LinksFunction, LoaderArgs } from "@remix-run/node";
-import type { UserData } from './modules/user-serialization.server';
+import type { UserSerializedData } from './modules/user-serialization.server';
 import { useEffect, useState } from 'react';
+import { LOGOUT_REDIRECT_URL } from './constants';
 
 type ContextType = {
-  user: UserData | null;
+  user: UserSerializedData | null;
   userAuthenticated: boolean;
 };
 
@@ -40,14 +41,21 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const {
-    userData,
-    isAuthenticated
-  } = await getUser(request);
-  return json({
-    userData,
-    isAuthenticated
-  });
+  const maybeUser: any = await getUser(request);
+
+  try {
+    const {
+      userData,
+      isAuthenticated
+    } = maybeUser;
+
+    return json({
+      userData,
+      isAuthenticated
+    });
+  } catch (e) {
+    return maybeUser;
+  }
 };
 
 export default function App() {
@@ -56,7 +64,7 @@ export default function App() {
     isAuthenticated
   } = useLoaderData<typeof loader>();
 
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserSerializedData | null>(null);
   const [userAuthenticated, setUserAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {

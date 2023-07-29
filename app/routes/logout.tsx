@@ -2,6 +2,7 @@ import { redirect } from '@remix-run/node';
 import { logout, getUserAccessTokenSession } from '~/servers/session.server';
 
 import type { ActionArgs } from '@remix-run/node';
+import { ROOT_REDIRECT_URL } from '~/constants';
 
 export const loader = async ({ request }: ActionArgs) => {
   try {
@@ -17,4 +18,4 @@ export const loader = async ({ request }: ActionArgs) => {
   }
 };
 
-export const action = async () => redirect('/');
+export const action = async () => redirect(ROOT_REDIRECT_URL);

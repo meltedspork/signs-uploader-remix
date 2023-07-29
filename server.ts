@@ -5,6 +5,7 @@ import { createRequestHandler } from '@remix-run/express';
 import compression from 'compression';
 import express from 'express';
 import morgan from 'morgan';
+import { ROOT_REDIRECT_URL } from '~/constants';
 
 const app = express();
 const metricsApp = express();
@@ -94,7 +95,7 @@ app.all(
 
 app.use((err: any, _req: any, res: any, next: any) => {
   if (err.name === 'UnauthorizedError') {
-    res.redirect('/');
+    res.redirect(ROOT_REDIRECT_URL);
   } else {
     next(err);
   }

@@ -7,13 +7,14 @@ import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import type { UserData } from '~/modules/user-serialization.server';
+import type { UserSerializedData } from '~/modules/user-serialization.server';
+import { LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL, ROOT_REDIRECT_URL } from '~/constants';
 
 const NavigatorBarComponent = ({
   user,
   userAuthenticated
 }: {
-  user: UserData | null;
+  user: UserSerializedData | null;
   userAuthenticated: boolean;
 }) => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const NavigatorBarComponent = ({
     >
       <Toolbar sx={{ flexWrap: 'wrap' }}>
         <Link
-          href='/'
+          href={ROOT_REDIRECT_URL}
           variant='h6'
           color='inherit'
           noWrap sx={{ flexGrow: 1 }}
@@ -52,7 +53,7 @@ const NavigatorBarComponent = ({
               </Typography>
             </IconButton>
             <Button
-              onClick={() => navigate('/logout')}
+              onClick={() => navigate(LOGOUT_REDIRECT_URL)}
               variant='outlined'
               sx={{ my: 1, mx: 1.5 }}
             >
@@ -61,7 +62,7 @@ const NavigatorBarComponent = ({
           </nav>
         :
           <Button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate(LOGIN_REDIRECT_URL)}
             variant='outlined'
             sx={{ my: 1, mx: 1.5 }}
           >

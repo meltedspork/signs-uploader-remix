@@ -1,12 +1,12 @@
 import type { Auth0JwtIdToken } from './auth0-jwt.server';
 
-export interface UserData {
+export interface UserSerializedData {
   name: string;
   pictureImgPath: string;
   emailAddress: string;
 }
 
-export function idTokenSerialized(idToken: Auth0JwtIdToken): UserData {
+export function idTokenSerialized(idToken: Auth0JwtIdToken): UserSerializedData {
   const {
     nickname: name,
     picture: pictureImgPath,
