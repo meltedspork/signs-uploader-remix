@@ -82,10 +82,6 @@ export async function getUser(request: Request, refreshedAccessToken: Auth0Jwt |
     if (!!user && !!jwtToken) {
       const { idToken } = await verifyJwtTokens(jwtToken);
 
-      console.log('!!!idToken: ', idToken);
-
-      // should we check and refresh here when expired maybe?
-
      // const user = await getUserBySub(idToken.sub);
 
       if (idToken) {
