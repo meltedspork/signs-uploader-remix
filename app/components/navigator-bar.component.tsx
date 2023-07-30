@@ -7,7 +7,7 @@ import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import type { UserSerializedData } from '~/modules/user-serialization.server';
+import type { UserSerializedData } from '~/modules/user.module';
 import { LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL, ROOT_REDIRECT_URL } from '~/constants';
 
 const NavigatorBarComponent = ({

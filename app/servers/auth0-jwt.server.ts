@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
-import { auth0Client } from '~/modules/auth0-jwt.server';
+import { auth0Client } from '~/modules/auth0-jwt.module';
 
 import type { Algorithm, VerifyOptions } from 'jsonwebtoken';
 import type {
@@ -8,7 +8,7 @@ import type {
   Auth0JwtAccessToken,
   Auth0JwtIdToken,
   Auth0JwtRefreshToken
-} from '~/modules/auth0-jwt.server';
+} from '~/modules/auth0-jwt.module';
 
 async function verifyBaseJwtToken(
   token: string,
@@ -45,7 +45,7 @@ export async function verifyJwtTokens(jwt: Auth0Jwt): Promise<{
   idToken: Auth0JwtIdToken
 }> {
   try {
-    console.log('verifyTokens: jwt', jwt);
+    console.log('verifyJwtTokens: jwt', jwt);
 
     const accessToken: Auth0JwtAccessToken = await verifyAccessToken(jwt);
     const idToken: Auth0JwtIdToken = await verifyIdToken(jwt);
@@ -54,7 +54,7 @@ export async function verifyJwtTokens(jwt: Auth0Jwt): Promise<{
       idToken
     });
   } catch (exception) {
-    console.log('verifyTokens: exception', exception);
+    console.log('verifyJwtTokens: exception', exception);
     return Promise.reject(exception);
   }
 };

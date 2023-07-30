@@ -1,4 +1,4 @@
-import type { Auth0JwtIdToken } from './auth0-jwt.server';
+import type { Auth0JwtIdToken } from './auth0-jwt.module';
 
 export interface UserSerializedData {
   name: string;

@@ -9,18 +9,18 @@ import {
   verifyAccessToken,
   verifyJwtTokens
 } from '~/servers/auth0-jwt.server';
-import { idTokenSerialized } from '~/modules/user-serialization.server';
+import { idTokenSerialized } from '~/modules/user.module';
 import firebaseCookieSessionStorage from '~/servers/firebase-cookie-session-storage.server';
 
 import { LOGOUT_REDIRECT_URL, ROOT_REDIRECT_URL } from '~/constants';
 
-import type { User } from '~/models/user.server';
+import type { Users } from '~/models/user.server';
 import type {
   Auth0Jwt,
   Auth0JwtAccessToken,
   Auth0JwtIdToken
-} from '~/modules/auth0-jwt.server';
-import type { UserSerializedData } from '~/modules/user-serialization.server';
+} from '~/modules/auth0-jwt.module';
+import type { UserSession } from '~/modules/session.module';
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set');
 
@@ -58,11 +58,8 @@ export async function getUserId(request: Request): Promise<User['id'] | undefine
   }
 }
 
-export async function getUser(request: Request, refreshedAccessToken: Auth0Jwt | null = null): Promise<{
-  userData: UserSerializedData | null;
-  isAuthenticated: boolean;
-} | TypedResponse<never>> {
-  const notAuthenticatedUserData = Promise.resolve({
+export async function getUser(request: Request, refreshedAccessToken: Auth0Jwt | null = null): Promise<UserSession> {
+  const notAuthenticatedUserData: Promise<UserSession> = Promise.resolve({
     userData: null,
     isAuthenticated: false
   });
@@ -77,12 +74,12 @@ export async function getUser(request: Request, refreshedAccessToken: Auth0Jwt |
     // console.log('!!!!!userId', userId);
     // if (userId === undefined) return null;
     console.log('!!!!!------!!!!!!!');
+    console.log('jwtToken: ', jwtToken);
     // const user = await getUserById(userId);
     // console.log('!!!!!user', user);
-    const user = false;
+    const user = true;
 
-    if (user) {
-    } else {
+    if (!!user && !!jwtToken) {
       const { idToken } = await verifyJwtTokens(jwtToken);
 
       console.log('!!!idToken: ', idToken);
@@ -104,13 +101,12 @@ export async function getUser(request: Request, refreshedAccessToken: Auth0Jwt |
     if (exception instanceof TokenExpiredError) {
       console.log('getUser: TokenExpiredError');
       if (!hasRefreshAccessToken) {
+        // NOTE: we only want to try refresh token
         return await updateUserSession(request);
       }
-      return redirect(LOGOUT_REDIRECT_URL);
-    } else {
-      console.log('getUser: exception');
-      return redirect(LOGOUT_REDIRECT_URL);
     }
+    console.log('getUser: exception');
+    throw redirect(LOGOUT_REDIRECT_URL);
   }
 }
 
@@ -166,10 +162,7 @@ export async function getUserAccessTokenSession(request: Request): Promise<Auth0
   return session.get(SESSION_JWT_TOKEN_KEY);
 }
 
-export async function updateUserSession(request: Request): Promise<{
-  userData: UserSerializedData | null;
-  isAuthenticated: boolean;
-} | TypedResponse<never>> {
+export async function updateUserSession(request: Request): Promise<UserSession> {
   const session: SessionData = await getSession(request);
   const jwtToken = await session.get(SESSION_JWT_TOKEN_KEY);
 
@@ -180,7 +173,7 @@ export async function updateUserSession(request: Request): Promise<{
     session.set(SESSION_JWT_TOKEN_KEY, refreshJwtToken);
     return getUser(request, refreshJwtToken);
   } catch(e) {
-    return redirect(LOGOUT_REDIRECT_URL)
+    throw redirect(LOGOUT_REDIRECT_URL);
   }
 };
 

@@ -1,5 +1,5 @@
 import { redirect } from '@remix-run/node';
-import { auth0Client } from "~/modules/auth0-jwt.server";
+import { auth0Client } from "~/modules/auth0-jwt.module";
 import { createUserSession, getUserId } from "~/servers/session.server";
 
 import type { ActionArgs } from '@remix-run/node';

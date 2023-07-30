@@ -15,6 +15,7 @@ import {
   useLoaderData,
   useOutletContext
 } from "@remix-run/react";
+import { useEffect, useState } from 'react';
 
 import { getUser } from "~/servers/session.server";
 import stylesheet from "~/tailwind.css";
@@ -26,9 +27,8 @@ import NavigatorBarComponent from '~/components/navigator-bar.component';
 import FooterComponent from '~/components/footer.component';
 
 import type { LinksFunction, LoaderArgs } from "@remix-run/node";
-import type { UserSerializedData } from './modules/user-serialization.server';
-import { useEffect, useState } from 'react';
-import { LOGOUT_REDIRECT_URL } from './constants';
+import type { UserSerializedData } from './modules/user.module';
+import type { UserSession } from './modules/session.module';
 
 type ContextType = {
   user: UserSerializedData | null;
@@ -41,21 +41,15 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const maybeUser: any = await getUser(request);
+  const {
+    userData,
+    isAuthenticated
+  }: UserSession = await getUser(request);
 
-  try {
-    const {
-      userData,
-      isAuthenticated
-    } = maybeUser;
-
-    return json({
-      userData,
-      isAuthenticated
-    });
-  } catch (e) {
-    return maybeUser;
-  }
+  return json({
+    userData,
+    isAuthenticated
+  });
 };
 
 export default function App() {

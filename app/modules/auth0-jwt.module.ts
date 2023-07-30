@@ -1,4 +1,3 @@
-//const axios = require('axios');
 import axios, { AxiosError } from 'axios';
 
 export interface Auth0Jwt {

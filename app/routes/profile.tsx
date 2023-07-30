@@ -16,8 +16,6 @@ export default function Profile() {
   const { user } = useUser();
 
   console.log('Profile: useUser--->', user);
-//  const config = useContext(ApiContext);
-    // const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
     const [currentStatus, setCurrentStatus] = useState({});
 
   // const user = {
