@@ -8,9 +8,9 @@ generator client {
 }
 
 model Users {
-  id      String @id @default(cuid())
-  email   String @unique
-  auth0Id String? @unique
+  id                String @id @default(cuid())
+  email             String @unique
+  idProviderUserId  String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

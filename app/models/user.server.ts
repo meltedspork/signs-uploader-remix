@@ -10,11 +10,11 @@ export async function getUserByEmail(email: Users["email"]) {
   return prisma.users.findUnique({ where: { email } });
 }
 
-export async function createUser(email: Users["email"], auth0Id: Users["auth0Id"]) {
+export async function createUser(email: Users["email"], idProviderUserId: Users["idProviderUserId"]) {
   return prisma.users.create({
     data: {
       email,
-      auth0Id
+      idProviderUserId
     },
   });
 }

@@ -2,7 +2,7 @@
 CREATE TABLE "Users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "auth0Id" TEXT,
+    "idProviderUserId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -25,7 +25,7 @@ CREATE TABLE "Signs" (
 CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_auth0Id_key" ON "Users"("auth0Id");
+CREATE UNIQUE INDEX "Users_idProviderUserId_key" ON "Users"("idProviderUserId");
 
 -- AddForeignKey
 ALTER TABLE "Signs" ADD CONSTRAINT "Signs_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
